@@ -76,6 +76,6 @@ def qdrant_search(query: str):
     return docs
 
 
-upload_website_to_collection(
-    "https://hamel.dev/blog/posts/evals/"
-)
+# upload_website_to_collection(
+#     "https://hamel.dev/blog/posts/evals/"
+# )

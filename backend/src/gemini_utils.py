@@ -4,7 +4,7 @@ from decouple import config
 
 
 model = ChatGoogleGenerativeAI(
-     model="gemini-3.8-flash",
+    model="gemini-3.5-flash-lite",
     google_api_key=config("GOOGLE_API_KEY"),
     temperature=0,
 )

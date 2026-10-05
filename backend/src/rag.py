@@ -11,22 +11,35 @@ from .gemini_utils import stream_completion
 
 # Gemini model
 model = ChatGoogleGenerativeAI(
-    model="gemini-3.8-flash",
+    model="gemini-3.5-flash-lite",
     google_api_key=config("GOOGLE_API_KEY"),
     temperature=0,
 )
 
 
 prompt_template = """
-Answer the question based on the context, in a concise manner, in markdown and using bullet points where applicable.
+You are a document-based question answering assistant.
 
-Context: {context}
+Answer the question ONLY using the provided context.
 
-Question: {question}
+Rules:
+- Use only the information available in the context.
+- Do not use your own general knowledge.
+- Do not make assumptions.
+- Do not invent or guess information.
+- If the answer is not available in the context, say:
+  "I don't have enough information in the provided documents."
+- Keep the answer concise.
+- Use markdown and bullet points where appropriate.
+
+Context:
+{context}
+
+Question:
+{question}
 
 Answer:
 """
-
 prompt = ChatPromptTemplate.from_template(prompt_template)
 
 retriever = vector_store.as_retriever()
@@ -53,6 +66,14 @@ def get_answer_and_docs(question: str):
     response = chain.invoke(question)
 
     answer = response["response"].content
+
+    if isinstance(answer, list):
+        answer = "\n".join(
+            item.get("text", "")
+            for item in answer
+            if isinstance(item, dict)
+        )
+
     context = response["context"]
 
     return {
